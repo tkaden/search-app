@@ -36,7 +36,7 @@ public class SearchServiceTests {
     public void testSaveSearchRecord() {
         when(repository.save(record)).thenReturn(record);
 
-        SearchRecord savedRecord = searchService.savSearchRecord(record);
+        SearchRecord savedRecord = searchService.saveSearchRecord(record);
 
         verify(repository).save(record);
         assertThat(savedRecord).isEqualTo(record);

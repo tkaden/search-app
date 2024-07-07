@@ -11,7 +11,7 @@ public class SearchService {
     @Autowired
     private SearchRecordRepository repository;
 
-    public SearchRecord savSearchRecord(SearchRecord record) {
+    public SearchRecord saveSearchRecord(SearchRecord record) {
         return repository.save(record);
     }
 
