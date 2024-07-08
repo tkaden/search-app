@@ -7,7 +7,7 @@
     <style>
         .spinner {
             display: none;
-            position: fixed;
+            position: absolute;
             top: 50%;
             left: 50%;
             width: 50px;
@@ -40,42 +40,69 @@
         <button id="clearBtn" class="btn btn-secondary">Clear</button>
         <button id="listPreviousBtn" class="btn btn-info">List Previous</button>
 
-        <div id="results" class="mt-4"></div>
         <div id="sorting" class="mt-4" style="display: none;">
             <label for="sortOptions">Sort by:</label>
             <select id="sortOptions" class="form-control">
+                <option value="none">--</option>
                 <option value="title">Title</option>
                 <option value="username">Username</option>
                 <option value="resultCount">Result Count</option>
             </select>
         </div>
-        <div class="spinner"></div>
+        <div id="results" class="mt-4">
+            <div class="spinner"></div>
+        </div>
     </div>
 
     <script>
         $(document).ready(function() {
+            let isPrevious = false;
+            let isSorting = false;
+
             function displayResults(data, isPrevious) {
-                let resultHTML = isPrevious ? '<ul>' : `<h2>Results: ${data.resultCount}</h2><ul>`;
-                data.forEach(item => {
-                    resultHTML += isPrevious 
-                        ? `<li>${item.username} searched for ${item.searchTerm} and found ${item.resultCount} results</li>`
-                        : `<li class="result-item">${item}</li>`;
-                });
+                let resultHTML;
+                if (isPrevious) {
+                    resultHTML = '<ul>';
+                    data.forEach(item => {
+                        resultHTML += `<li>${item.username} searched for ${item.searchTerm} and found ${item.resultCount} results</li>`;
+                    });
+                } else {
+                    resultHTML = `<h2>Results: ${data.resultCount}</h2><ul>`;
+                    data.titles.forEach(title => {
+                        resultHTML += `<li class="result-item">${title}</li>`;
+                    });
+                }
                 resultHTML += '</ul>';
                 $('#results').html(resultHTML);
                 $('#sorting').show();
             }
 
             function clearResults() {
-                $('#results').html('');
+                $('#results').html('<div class="spinner"></div>');
             }
 
             function toggleSpinner(show) {
                 if (show) {
-                    clearResults(); // Clear contents when showing spinner
+                    clearResults();
                     $('.spinner').show();
                 } else {
                     $('.spinner').hide();
+                }
+            }
+
+            function updateSortOptions() {
+                if (isPrevious) {
+                    $('#sortOptions').html(`
+                        <option value="none">--</option>
+                        <option value="title">Title</option>
+                        <option value="username">Username</option>
+                        <option value="resultCount">Result Count</option>
+                    `);
+                } else {
+                    $('#sortOptions').html(`
+                        <option value="none">--</option>
+                        <option value="title">Title</option>
+                    `);
                 }
             }
 
@@ -90,19 +117,23 @@
                 }
 
                 toggleSpinner(true);
+                isPrevious = false;
+                updateSortOptions();
 
-                $.get(`/api/search`, { username: username, searchTerm: searchTerm, sortBy: sortBy }, function(data) {
-                    displayResults(data.titles, false);
+                $.get(`/api/search`, { username: username, searchTerm: searchTerm, sortBy: sortBy, isSorting: isSorting }, function(data) {
+                    displayResults(data, false);
                     toggleSpinner(false);
                 }).fail(function() {
                     toggleSpinner(false);
                 });
+
+                isSorting = false;
             });
 
             $('#clearBtn').click(function() {
                 $('#username').val('');
                 $('#searchTerm').val('');
-                $('#results').html('');
+                $('#results').html('<div class="spinner"></div>');
                 $('#sorting').hide();
             });
 
@@ -110,6 +141,8 @@
                 let sortBy = $('#sortOptions').val();
 
                 toggleSpinner(true);
+                isPrevious = true;
+                updateSortOptions();
 
                 $.get('/api/previous', { sortBy: sortBy }, function(data) {
                     displayResults(data, true);
@@ -121,15 +154,16 @@
 
             $('#sortOptions').change(function() {
                 if ($('#results').children().length > 0) {
-                    let username = $('#username').val();
-                    let searchTerm = $('#searchTerm').val();
-                    if (username && searchTerm) {
-                        $('#searchBtn').click();
-                    } else {
+                    isSorting = true;
+                    if (isPrevious) {
                         $('#listPreviousBtn').click();
+                    } else {
+                        $('#searchBtn').click();
                     }
                 }
             });
+
+            updateSortOptions();
         });
     </script>
 </body>

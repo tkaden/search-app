@@ -51,7 +51,7 @@ public class SearchControllerTests {
         when(searchService.saveSearchRecord(any(SearchRecord.class))).thenReturn(record);
 
         // Calling the controller method directly
-        ResponseEntity<?> response = searchController.search("TestUser", "TestTerm", "username");
+        ResponseEntity<?> response = searchController.search("TestUser", "TestTerm", "username", false);
 
         verify(restTemplate).getForEntity(anyString(), any(Class.class));
         verify(searchService).saveSearchRecord(any(SearchRecord.class));
@@ -66,7 +66,7 @@ public class SearchControllerTests {
     @Test
     public void testSearchWithEmptyInputs() {
         // Calling the controller method directly with empty inputs
-        ResponseEntity<?> response = searchController.search("", "", "");
+        ResponseEntity<?> response = searchController.search("", "", "", false);
 
         // Verify response status and body
         assertThat(response.getStatusCodeValue()).isEqualTo(400);

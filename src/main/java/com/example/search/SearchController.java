@@ -27,7 +27,12 @@ public class SearchController {
     private RestTemplate restTemplate;
 
     @GetMapping("/search")
-    public ResponseEntity<?> search(@RequestParam String username, @RequestParam String searchTerm, @RequestParam(required = false) String sortBy) {
+    public ResponseEntity<?> search(
+            @RequestParam String username, 
+            @RequestParam String searchTerm, 
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) boolean isSorting) {
+                
         if (username.isEmpty() || searchTerm.isEmpty()) {
             return ResponseEntity.badRequest().body("Please populate both fields");
         }
@@ -48,11 +53,13 @@ public class SearchController {
         }
 
         // Save record
-        SearchRecord record = new SearchRecord();
-        record.setUsername(username);
-        record.setSearchTerm(searchTerm);
-        record.setResultCount(numFound);
-        service.saveSearchRecord(record);
+        if (!isSorting) {
+            SearchRecord record = new SearchRecord();
+            record.setUsername(username);
+            record.setSearchTerm(searchTerm);
+            record.setResultCount(numFound);
+            service.saveSearchRecord(record);
+        }
 
         // Sort titles if sortBy is provided
         if (sortBy != null) {
