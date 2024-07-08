@@ -1,6 +1,7 @@
 package com.example.search;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class SearchController {
     private RestTemplate restTemplate;
 
     @GetMapping("/search")
-    public ResponseEntity<?> search(@RequestParam String username, @RequestParam String searchTerm) {
+    public ResponseEntity<?> search(@RequestParam String username, @RequestParam String searchTerm, @RequestParam(required = false) String sortBy) {
         if (username.isEmpty() || searchTerm.isEmpty()) {
             return ResponseEntity.badRequest().body("Please populate both fields");
         }
@@ -53,6 +54,21 @@ public class SearchController {
         record.setResultCount(numFound);
         service.saveSearchRecord(record);
 
+        // Sort titles if sortBy is provided
+        if (sortBy != null) {
+            switch (sortBy) {
+                case "title":
+                    titles.sort(String::compareToIgnoreCase);
+                    break;
+                case "username":
+                    break;
+                case "resultCount":
+                    break;
+                default:
+                    break;
+            }
+        }
+
         // Create Response
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("resultCount", numFound);
@@ -61,7 +77,26 @@ public class SearchController {
     }
 
     @GetMapping("/previous")
-    public ResponseEntity<List<SearchRecord>> listPrevious() {
-        return ResponseEntity.ok(service.getAllSearchRecords());
+    public ResponseEntity<List<SearchRecord>> listPrevious(@RequestParam(required = false) String sortBy) {
+        List<SearchRecord> records = service.getAllSearchRecords();
+
+        // Sort records if sortBy is provided
+        if (sortBy != null) {
+            switch (sortBy) {
+                case "username":
+                    records.sort(Comparator.comparing(SearchRecord::getUsername, String.CASE_INSENSITIVE_ORDER));
+                    break;
+                case "searchTerm":
+                    records.sort(Comparator.comparing(SearchRecord::getSearchTerm, String.CASE_INSENSITIVE_ORDER));
+                    break;
+                case "resultCount":
+                    records.sort(Comparator.comparingInt(SearchRecord::getResultCount));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return ResponseEntity.ok(records);
     }
 }

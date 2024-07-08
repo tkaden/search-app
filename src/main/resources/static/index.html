@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search App</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Search App</h1>
+        <div class="form-group">
+            <label for="username">User Name</label>
+            <input type="text" id="username" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="searchTerm">Search Term</label>
+            <input type="text" id="searchTerm" class="form-control">
+        </div>
+        <button id="searchBtn" class="btn btn-primary">Search</button>
+        <button id="clearBtn" class="btn btn-secondary">Clear</button>
+        <button id="listPreviousBtn" class="btn btn-info">List Previous</button>
+
+        <div id="results" class="mt-4"></div>
+        <div id="sorting" class="mt-4" style="display: none;">
+            <label for="sortOptions">Sort by:</label>
+            <select id="sortOptions" class="form-control">
+                <option value="title">Title</option>
+                <option value="username">Username</option>
+                <option value="resultCount">Result Count</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#searchBtn').click(function() {
+                let username = $('#username').val();
+                let searchTerm = $('#searchTerm').val();
+                let sortBy = $('#sortOptions').val();
+
+                if (!username || !searchTerm) {
+                    alert("Please populate both fields.");
+                    return;
+                }
+
+                $.get(`/api/search`, { username: username, searchTerm: searchTerm, sortBy: sortBy }, function(data) {
+                    let resultHTML = `<h2>Results: ${data.resultCount}</h2><ul>`;
+                    data.titles.forEach(title => {
+                        resultHTML += `<li class="result-item">${title}</li>`;
+                    });
+                    resultHTML += '</ul>';
+                    $('#results').html(resultHTML);
+                    $('#sorting').show();
+                });
+            });
+
+            $('#clearBtn').click(function() {
+                $('#username').val('');
+                $('#searchTerm').val('');
+                $('#results').html('');
+                $('#sorting').hide();
+            });
+
+            $('#listPreviousBtn').click(function() {
+                let sortBy = $('#sortOptions').val();
+
+                $.get('/api/previous', { sortBy: sortBy }, function(data) {
+                    let list = '<ul>';
+                    data.forEach(record => {
+                        list += `<li>${record.username} searched for ${record.searchTerm} and found ${record.resultCount} results</li>`;
+                    });
+                    list += '</ul>';
+                    $('#results').html(list);
+                    $('#sorting').hide();
+                });
+            });
+
+            $('#sortOptions').change(function() {
+                $('#searchBtn').click();
+                $('#listPreviousBtn').click();
+            });
+        });
+    </script>
+</body>
+</html>
