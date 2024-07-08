@@ -22,6 +22,9 @@ public class SearchController {
     @Autowired
     private SearchService service;
 
+    @Autowired
+    private RestTemplate restTemplate;
+
     @GetMapping("/search")
     public ResponseEntity<?> search(@RequestParam String username, @RequestParam String searchTerm) {
         if (username.isEmpty() || searchTerm.isEmpty()) {
@@ -29,7 +32,6 @@ public class SearchController {
         }
 
         // Call Open Library
-        RestTemplate restTemplate = new RestTemplate();
         String url = "https://openlibrary.org/search.json?q=" + searchTerm;
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
