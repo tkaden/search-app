@@ -8,7 +8,7 @@ Search App is a Spring Boot web application that allows users to search for book
 
 - Search for books by entering a username and a search term.
 - Display search results with the number of results and the first 10 book titles.
-- Save search records to a database.
+- Save search records to a database using JPA and Hibernate ORM.
 - List previous search records.
 - Sort search results by title, username, or result count.
 - Display a loading spinner while fetching data from the API.
