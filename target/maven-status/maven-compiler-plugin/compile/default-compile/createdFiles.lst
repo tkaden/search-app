@@ -1,1 +1,6 @@
+com/example/search/SearchRecord.class
+com/example/search/SearchService.class
 com/example/search/SearchApplication.class
+com/example/search/SearchRecordRepository.class
+com/example/search/SearchConfig.class
+com/example/search/SearchController.class

@@ -1,1 +1,5 @@
+com/example/search/SearchControllerTests.class
+com/example/search/SearchServiceTests.class
+com/example/search/SearchRecordTests.class
 com/example/search/SearchApplicationTests.class
+com/example/search/SearchRecordRepositoryTests.class
