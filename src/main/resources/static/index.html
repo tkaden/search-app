@@ -33,6 +33,18 @@
 
     <script>
         $(document).ready(function() {
+            function displayResults(data, isPrevious) {
+                let resultHTML = isPrevious ? '<ul>' : `<h2>Results: ${data.resultCount}</h2><ul>`;
+                data.forEach(item => {
+                    resultHTML += isPrevious 
+                        ? `<li>${item.username} searched for ${item.searchTerm} and found ${item.resultCount} results</li>`
+                        : `<li class="result-item">${item}</li>`;
+                });
+                resultHTML += '</ul>';
+                $('#results').html(resultHTML);
+                $('#sorting').show();
+            }
+
             $('#searchBtn').click(function() {
                 let username = $('#username').val();
                 let searchTerm = $('#searchTerm').val();
@@ -44,13 +56,7 @@
                 }
 
                 $.get(`/api/search`, { username: username, searchTerm: searchTerm, sortBy: sortBy }, function(data) {
-                    let resultHTML = `<h2>Results: ${data.resultCount}</h2><ul>`;
-                    data.titles.forEach(title => {
-                        resultHTML += `<li class="result-item">${title}</li>`;
-                    });
-                    resultHTML += '</ul>';
-                    $('#results').html(resultHTML);
-                    $('#sorting').show();
+                    displayResults(data.titles, false);
                 });
             });
 
@@ -65,19 +71,20 @@
                 let sortBy = $('#sortOptions').val();
 
                 $.get('/api/previous', { sortBy: sortBy }, function(data) {
-                    let list = '<ul>';
-                    data.forEach(record => {
-                        list += `<li>${record.username} searched for ${record.searchTerm} and found ${record.resultCount} results</li>`;
-                    });
-                    list += '</ul>';
-                    $('#results').html(list);
-                    $('#sorting').hide();
+                    displayResults(data, true);
                 });
             });
 
             $('#sortOptions').change(function() {
-                $('#searchBtn').click();
-                $('#listPreviousBtn').click();
+                if ($('#results').children().length > 0) {
+                    let username = $('#username').val();
+                    let searchTerm = $('#searchTerm').val();
+                    if (username && searchTerm) {
+                        $('#searchBtn').click();
+                    } else {
+                        $('#listPreviousBtn').click();
+                    }
+                }
             });
         });
     </script>
