@@ -112,3 +112,6 @@ To run the tests, use the following command:
 ```sh
 mvn test
 ```
+
+## Notes
+Template provided by [spring initializer](https://start.spring.io/)
