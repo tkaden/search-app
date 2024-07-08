@@ -4,6 +4,26 @@
     <title>Search App</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <style>
+        .spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            margin: -25px 0 0 -25px;
+            border: 4px solid rgba(0, 0, 0, .1);
+            border-left-color: #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -29,6 +49,7 @@
                 <option value="resultCount">Result Count</option>
             </select>
         </div>
+        <div class="spinner"></div>
     </div>
 
     <script>
@@ -45,6 +66,19 @@
                 $('#sorting').show();
             }
 
+            function clearResults() {
+                $('#results').html('');
+            }
+
+            function toggleSpinner(show) {
+                if (show) {
+                    clearResults(); // Clear contents when showing spinner
+                    $('.spinner').show();
+                } else {
+                    $('.spinner').hide();
+                }
+            }
+
             $('#searchBtn').click(function() {
                 let username = $('#username').val();
                 let searchTerm = $('#searchTerm').val();
@@ -55,8 +89,13 @@
                     return;
                 }
 
+                toggleSpinner(true);
+
                 $.get(`/api/search`, { username: username, searchTerm: searchTerm, sortBy: sortBy }, function(data) {
                     displayResults(data.titles, false);
+                    toggleSpinner(false);
+                }).fail(function() {
+                    toggleSpinner(false);
                 });
             });
 
@@ -70,8 +109,13 @@
             $('#listPreviousBtn').click(function() {
                 let sortBy = $('#sortOptions').val();
 
+                toggleSpinner(true);
+
                 $.get('/api/previous', { sortBy: sortBy }, function(data) {
                     displayResults(data, true);
+                    toggleSpinner(false);
+                }).fail(function() {
+                    toggleSpinner(false);
                 });
             });
 
