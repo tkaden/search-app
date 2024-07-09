@@ -1,6 +1,6 @@
-/home/tkaden/git/search-app/src/main/java/com/example/search/SearchRecord.java
-/home/tkaden/git/search-app/src/main/java/com/example/search/SearchService.java
-/home/tkaden/git/search-app/src/main/java/com/example/search/SearchApplication.java
-/home/tkaden/git/search-app/src/main/java/com/example/search/SearchConfig.java
-/home/tkaden/git/search-app/src/main/java/com/example/search/SearchController.java
-/home/tkaden/git/search-app/src/main/java/com/example/search/SearchRecordRepository.java
+/home/tkaden/gitlab/search-app/src/main/java/com/example/search/SearchRecord.java
+/home/tkaden/gitlab/search-app/src/main/java/com/example/search/SearchRecordRepository.java
+/home/tkaden/gitlab/search-app/src/main/java/com/example/search/SearchController.java
+/home/tkaden/gitlab/search-app/src/main/java/com/example/search/SearchApplication.java
+/home/tkaden/gitlab/search-app/src/main/java/com/example/search/SearchConfig.java
+/home/tkaden/gitlab/search-app/src/main/java/com/example/search/SearchService.java

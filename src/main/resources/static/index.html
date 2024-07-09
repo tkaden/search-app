@@ -128,8 +128,9 @@
                 $.get(`/api/search`, { username: username, searchTerm: searchTerm, sortBy: sortBy, isSorting: isSorting }, function(data) {
                     displayResults(data, false);
                     toggleSpinner(false);
-                }).fail(function() {
+                }).fail(function(xhr) {
                     toggleSpinner(false);
+                    alert(xhr.responseText); // Display the error message
                 });
 
                 isSorting = false;
